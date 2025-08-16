@@ -28,28 +28,27 @@ ENV DEFAULT_GROUP="rstudio-users"
 
 COPY scripts/install_rstudio.sh /rocker_scripts/install_rstudio.sh
 COPY scripts/install_s6init.sh /rocker_scripts/install_s6init.sh
+COPY customization/default_users.sh /rocker_scripts/default_users.sh
 COPY scripts/init_set_env.sh /rocker_scripts/init_set_env.sh
 COPY customization/init_userconf.sh /rocker_scripts/init_userconf.sh
 COPY scripts/pam-helper.sh /rocker_scripts/pam-helper.sh
 
-# Copy custom user creation script (will be used after rstudio installation)
-COPY customization/default_users.sh /rocker_scripts/default_users.sh
-RUN chmod +x /rocker_scripts/default_users.sh
+# Make scripts executable
+RUN chmod +x /rocker_scripts/default_user.sh /rocker_scripts/default_users.sh
 
 # Install RStudio (this will create default rstudio user via default_user.sh)
 RUN /rocker_scripts/install_rstudio.sh
 
-EXPOSE 8787
-CMD ["/init"]
-
 COPY scripts/install_pandoc.sh /rocker_scripts/install_pandoc.sh
 RUN /rocker_scripts/install_pandoc.sh
 
-# Create additional users: dev1, dev2, dev3 with rstudio-users group (GID 8500)
-# Note: rstudio user was already created during RStudio installation
+# Create all users: rstudio, dev1, dev2, dev3 with rstudio-users group (GID 8500)
 RUN DEFAULT_USER=dev1 DEFAULT_GROUP=rstudio-users /rocker_scripts/default_users.sh
 RUN DEFAULT_USER=dev2 DEFAULT_GROUP=rstudio-users /rocker_scripts/default_users.sh
 RUN DEFAULT_USER=dev3 DEFAULT_GROUP=rstudio-users /rocker_scripts/default_users.sh
 
 COPY scripts/install_quarto.sh /rocker_scripts/install_quarto.sh
 RUN /rocker_scripts/install_quarto.sh
+
+EXPOSE 8787
+CMD ["/init"]

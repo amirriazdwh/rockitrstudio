@@ -6,7 +6,7 @@ DEFAULT_USER=${DEFAULT_USER:-rstudio}
 DEFAULT_GROUP=${DEFAULT_GROUP:-rstudio-users}
 USER=${DEFAULT_USER}
 USERID=${USERID:=1000}
-GROUPID=${GROUPID:=1000}
+GROUPID=${GROUPID:=8500}
 ROOT=${ROOT:=FALSE}
 UMASK=${UMASK:=022}
 LANG=${LANG:=en_US.UTF-8}
@@ -155,7 +155,7 @@ elif [ "$USERID" -ne 1000 ]; then ## Configure user with a different USERID if r
     useradd -m "$USER" -u "$USERID"
     mkdir -p "${USERHOME}"
     chown -R "$USER" "${USERHOME}"
-    usermod -a -G "${DEFAULT_GROUP}" "$USER"
+    usermod -a -G staff "$USER"
 fi
 
 if [ "${RUNROOTLESS}" != "true" ] && [ "$GROUPID" -ne 1000 ]; then ## Configure the primary GID (whether rstudio or $USER) with a different GROUPID if requested.
