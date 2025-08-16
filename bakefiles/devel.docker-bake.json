@@ -1,0 +1,125 @@
+{
+  "group": [
+    {
+      "default": [
+        {
+          "targets": ["r-ver", "rstudio", "tidyverse"]
+        }
+      ]
+    }
+  ],
+  "target": {
+    "r-ver": {
+      "dockerfile": "dockerfiles/r-ver_devel.Dockerfile",
+      "labels": {
+        "org.opencontainers.image.title": "rocker/r-ver",
+        "org.opencontainers.image.description": "Reproducible builds to fixed version of R",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:latest",
+        "org.opencontainers.image.version": "R-devel",
+        "org.opencontainers.image.licenses": "GPL-2.0-or-later",
+        "org.opencontainers.image.source": "https://github.com/rocker-org/rocker-versioned2",
+        "org.opencontainers.image.vendor": "Rocker Project",
+        "org.opencontainers.image.authors": "Carl Boettiger <cboettig@ropensci.org>"
+      },
+      "tags": [
+        "docker.io/rocker/r-ver:devel"
+      ],
+      "platforms": [
+        "linux/amd64"
+      ],
+      "cache-to": [
+        "type=inline"
+      ],
+      "cache-from": [
+        "docker.io/rocker/r-ver:devel",
+        "docker.io/rocker/rstudio:devel",
+        "docker.io/rocker/tidyverse:devel",
+        "docker.io/rocker/verse:devel"
+      ]
+    },
+    "rstudio": {
+      "dockerfile": "dockerfiles/rstudio_devel.Dockerfile",
+      "labels": {
+        "org.opencontainers.image.title": "rocker/rstudio",
+        "org.opencontainers.image.description": "RStudio Server with fixed version of R",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:latest",
+        "org.opencontainers.image.version": "R-devel",
+        "org.opencontainers.image.licenses": "GPL-2.0-or-later",
+        "org.opencontainers.image.source": "https://github.com/rocker-org/rocker-versioned2",
+        "org.opencontainers.image.vendor": "Rocker Project",
+        "org.opencontainers.image.authors": "Carl Boettiger <cboettig@ropensci.org>"
+      },
+      "tags": [
+        "docker.io/rocker/rstudio:devel"
+      ],
+      "platforms": [
+        "linux/amd64"
+      ],
+      "cache-to": [
+        "type=inline"
+      ],
+      "cache-from": [
+        "docker.io/rocker/r-ver:devel",
+        "docker.io/rocker/rstudio:devel",
+        "docker.io/rocker/tidyverse:devel",
+        "docker.io/rocker/verse:devel"
+      ]
+    },
+    "tidyverse": {
+      "dockerfile": "dockerfiles/tidyverse_devel.Dockerfile",
+      "labels": {
+        "org.opencontainers.image.title": "rocker/tidyverse",
+        "org.opencontainers.image.description": "Version-stable build of R, RStudio Server, and R packages.",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:latest",
+        "org.opencontainers.image.version": "R-devel",
+        "org.opencontainers.image.licenses": "GPL-2.0-or-later",
+        "org.opencontainers.image.source": "https://github.com/rocker-org/rocker-versioned2",
+        "org.opencontainers.image.vendor": "Rocker Project",
+        "org.opencontainers.image.authors": "Carl Boettiger <cboettig@ropensci.org>"
+      },
+      "tags": [
+        "docker.io/rocker/tidyverse:devel"
+      ],
+      "platforms": [
+        "linux/amd64"
+      ],
+      "cache-to": [
+        "type=inline"
+      ],
+      "cache-from": [
+        "docker.io/rocker/r-ver:devel",
+        "docker.io/rocker/rstudio:devel",
+        "docker.io/rocker/tidyverse:devel",
+        "docker.io/rocker/verse:devel"
+      ]
+    },
+    "verse": {
+      "dockerfile": "dockerfiles/verse_devel.Dockerfile",
+      "labels": {
+        "org.opencontainers.image.title": "rocker/verse",
+        "org.opencontainers.image.description": "Adds tex & related publishing packages to version-locked tidyverse image.",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:latest",
+        "org.opencontainers.image.version": "R-devel",
+        "org.opencontainers.image.licenses": "GPL-2.0-or-later",
+        "org.opencontainers.image.source": "https://github.com/rocker-org/rocker-versioned2",
+        "org.opencontainers.image.vendor": "Rocker Project",
+        "org.opencontainers.image.authors": "Carl Boettiger <cboettig@ropensci.org>"
+      },
+      "tags": [
+        "docker.io/rocker/verse:devel"
+      ],
+      "platforms": [
+        "linux/amd64"
+      ],
+      "cache-to": [
+        "type=inline"
+      ],
+      "cache-from": [
+        "docker.io/rocker/r-ver:devel",
+        "docker.io/rocker/rstudio:devel",
+        "docker.io/rocker/tidyverse:devel",
+        "docker.io/rocker/verse:devel"
+      ]
+    }
+  }
+}

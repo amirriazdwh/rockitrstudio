@@ -1,0 +1,14 @@
+docker run -d \
+  --name rstudio \
+  -p 8787:8787 \
+  -e DISABLE_AUTH=false \
+  -e RUNROOTLESS=false \
+  -e DEFAULT_USER=rstudio \
+  -e USERID=1001 \
+  -e GROUPID=1001 \
+  -e PASSWORD=StrongPass! \
+  -e TZ=Asia/Dubai \
+  -e LANG=en_US.UTF-8 \
+  rstudio-custom:4.5.1
+
+

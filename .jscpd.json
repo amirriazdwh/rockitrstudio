@@ -1,0 +1,12 @@
+{
+  "threshold": 0,
+  "reporters": [
+    "consoleFull"
+  ],
+  "ignore": [
+    "**/bakefiles/*.json",
+    "**/dockerfiles/*.json",
+    "**/templates/*"
+  ],
+  "absolute": true
+}

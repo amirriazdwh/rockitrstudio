@@ -1,0 +1,56 @@
+{
+  "base_image": [
+    "rocker/r-ver"
+  ],
+  "tag": [
+    "4.3.0",
+    "latest"
+  ],
+  "script_name": [
+    "install_rstudio.sh",
+    "install_pandoc.sh",
+    "install_tidyverse.sh",
+    "install_verse.sh",
+    "install_quarto.sh",
+    "install_shiny_server.sh",
+    "install_geospatial.sh",
+    "install_python.sh",
+    "install_jupyter.sh",
+    "install_julia.sh"
+  ],
+  "script_arg": [
+    "none"
+  ],
+  "include": [
+    {
+      "base_image": "rocker/r-ver",
+      "tag": "devel",
+      "script_name": "install_rstudio.sh",
+      "script_arg": "daily"
+    },
+    {
+      "base_image": "rocker/r-ver",
+      "tag": "latest",
+      "script_name": "install_pandoc.sh",
+      "script_arg": "2.18"
+    },
+    {
+      "base_image": "rocker/r-ver",
+      "tag": "latest",
+      "script_name": "install_quarto.sh",
+      "script_arg": "1.0.36"
+    },
+    {
+      "base_image": "rocker/r-ver",
+      "tag": "latest",
+      "script_name": "install_quarto.sh",
+      "script_arg": "prerelease"
+    },
+    {
+      "base_image": "debian",
+      "tag": "stable-slim",
+      "script_name": "install_quarto.sh",
+      "script_arg": "none"
+    }
+  ]
+}

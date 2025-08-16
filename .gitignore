@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+.*.swp
+tests/gpu/misc/hosts
+
+tests/gpu/misc/hosts
+
+tmp
+
+# Use for build reports
+/reports
