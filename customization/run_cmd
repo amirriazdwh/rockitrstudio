@@ -1,0 +1,19 @@
+docker run -d \
+  --name rstudio \
+  -p 8787:8787 \
+  -e DISABLE_AUTH=false \
+  -e RUNROOTLESS=false \
+  -e DEFAULT_USER=rstudio \
+  -e DEFAULT_GROUP=rstudio-users \
+  -e ROOT=true \
+  -e PASSWORD=StrongPass! \
+  -e TZ=Asia/Dubai \
+  -e LANG=en_US.UTF-8 \
+  rstudio-multiuser:4.5.1
+
+docker build -t rstudio-multiuser:4.5.1 -f customization/rstudio_multiuser_4.5.1.Dockerfile .
+
+docker stop $(docker ps -q) && \
+docker rm -f $(docker ps -aq) && \
+docker rmi -f $(docker images -q) && \
+docker system prune -af --volumes
