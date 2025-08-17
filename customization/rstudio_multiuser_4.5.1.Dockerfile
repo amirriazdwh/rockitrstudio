@@ -10,7 +10,8 @@ COPY customization/install_java.sh /rocker_scripts/install_java.sh
 RUN chmod +x /rocker_scripts/install_java.sh
 RUN /rocker_scripts/install_java.sh
 
-COPY scripts/install_R_source.sh /rocker_scripts/install_R_source.sh
+COPY customization/install_R_source.sh /rocker_scripts/install_R_source.sh
+RUN chmod +x /rocker_scripts/install_R_source.sh
 RUN /rocker_scripts/install_R_source.sh
 
 ENV CRAN="https://p3m.dev/cran/__linux__/noble/latest"
