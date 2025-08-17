@@ -12,6 +12,10 @@ UMASK=${UMASK:=022}
 LANG=${LANG:=en_US.UTF-8}
 TZ=${TZ:=Etc/UTC}
 RUNROOTLESS=${RUNROOTLESS:=auto}
+  # Auth enabled: require a group + proper PAM sessions; optionally enforce min UID
+AUTH_REQUIRED_GROUP=${DEFAULT_GROUP}
+AUTH_REQUIRED_GID=${GROUPID}
+AUTH_MIN_UID=${USERID}
 
 if [ "${RUNROOTLESS}" = "auto" ]; then
     RUNROOTLESS=$(grep 4294967295 /proc/self/uid_map >/dev/null && echo "false" || echo "true")
@@ -107,6 +111,44 @@ fi
 if [[ ${DISABLE_AUTH,,} == "true" ]]; then
     cp /etc/rstudio/disable_auth_rserver.conf /etc/rstudio/rserver.conf
     echo "USER=$USER" >>/etc/environment
+else
+  # Ensure config dir/file and sane perms
+  install -d -m 0755 -o root -g root /etc/rstudio
+  touch /etc/rstudio/rserver.conf
+  chmod 0644 /etc/rstudio/rserver.conf
+
+  # Ensure the authorization group exists (try desired GID, fall back gracefully)
+  if ! getent group ${AUTH_REQUIRED_GROUP} >/dev/null 2>&1; then
+    groupadd -g ${AUTH_REQUIRED_GID} ${AUTH_REQUIRED_GROUP} 2>/dev/null \
+      || groupadd ${AUTH_REQUIRED_GROUP} || true
+  fi
+
+  # Add the main login user to the gate group (if it exists)
+  if id -u ${USER} >/dev/null 2>&1; then
+    usermod -aG ${AUTH_REQUIRED_GROUP} ${USER} || true
+  fi
+  # In rootless mode, login user is root—add it so you can sign in
+  if [[ ${RUNROOTLESS:-auto} == "true" ]]; then
+    usermod -aG ${AUTH_REQUIRED_GROUP} root || true
+  fi
+
+  # Remove any previous keys to avoid duplicates, then append desired values
+  sed -i \
+    -e '/^auth-none=/d' \
+    -e '/^auth-pam-sessions-enabled=/d' \
+    -e '/^auth-required-user-group=/d' \
+    -e '/^auth-minimum-user-id=/d' \
+    /etc/rstudio/rserver.conf
+
+  {
+    echo 'auth-none=0'
+    echo 'auth-pam-sessions-enabled=1'
+    echo "auth-required-user-group=${AUTH_REQUIRED_GROUP}"
+    # Only set minimum UID when NOT rootless (rootless must allow UID 0)
+    if [[ "${RUNROOTLESS:-auto}" != "true" ]]; then
+      echo "auth-minimum-user-id=${AUTH_MIN_UID}"
+    fi
+  } >> /etc/rstudio/rserver.conf
 fi
 
 if grep --quiet "auth-none=1" /etc/rstudio/rserver.conf; then

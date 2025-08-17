@@ -17,3 +17,31 @@ docker stop $(docker ps -q) && \
 docker rm -f $(docker ps -aq) && \
 docker rmi -f $(docker images -q) && \
 docker system prune -af --volumes
+
+docker run -d --name rstudio-big \
+  -p 8787:8787 \
+  --cpus=8 \
+  --cpuset-cpus=0-7 \
+  --memory=32g --memory-reservation=28g \
+  --pids-limit=131072 \
+  --ulimit nofile=65535:65535 --ulimit nproc=32768:32768 \
+  --shm-size=8g \
+  --sysctl net.core.somaxconn=65535 \
+  --sysctl net.ipv4.tcp_max_syn_backlog=8192 \
+  -e PASSWORD=strongpass \
+  -e DISABLE_AUTH=false \
+  -e MALLOC_ARENA_MAX=2 \
+  -e OMP_NUM_THREADS=1 -e OPENBLAS_NUM_THREADS=1 -e MKL_NUM_THREADS=1 \
+  -e R_MAX_VSIZE=20Gb \
+  -e TMPDIR=/scratch \
+   rstudio-multiuser:4.5.1
+
+
+   # on the host
+docker inspect -f '{{.Created}}' rstudio-multiuser:4.5.1          # image build time
+docker inspect -f '{{.State.StartedAt}}' rstudio-big              # container start time
+
+# in the container
+stat -c '%y  %n' /etc/cont-init.d/02_userconf                     # file mtime (build time)
+
+
