@@ -13,6 +13,7 @@ WITH_TEX="${WITH_TEX:-false}"
 WITH_TCLTK="${WITH_TCLTK:-false}"
 R_HOME="${R_HOME:-/usr/local/lib/R}"
 LANG="${LANG:-en_US.UTF-8}"
+
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update
