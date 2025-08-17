@@ -135,14 +135,12 @@ else
   # Remove any previous keys to avoid duplicates, then append desired values
   sed -i \
     -e '/^auth-none=/d' \
-    -e '/^auth-pam-sessions-enabled=/d' \
     -e '/^auth-required-user-group=/d' \
     -e '/^auth-minimum-user-id=/d' \
     /etc/rstudio/rserver.conf
 
   {
     echo 'auth-none=0'
-    echo 'auth-pam-sessions-enabled=1'
     echo "auth-required-user-group=${AUTH_REQUIRED_GROUP}"
     # Only set minimum UID when NOT rootless (rootless must allow UID 0)
     if [[ "${RUNROOTLESS:-auto}" != "true" ]]; then
