@@ -66,5 +66,9 @@ COPY customization/install_graphics_stack.sh /rocker_scripts/install_graphics_st
 RUN chmod +x /rocker_scripts/install_graphics_stack.sh
 RUN /rocker_scripts/install_graphics_stack.sh
 
+COPY customization/install_dbconnector.sh /rocker_scripts/install_dbconnector.sh
+RUN chmod +x /rocker_scripts/install_dbconnector.sh
+RUN /rocker_scripts/install_dbconnector.sh
+
 EXPOSE 8787
 CMD ["/init"]
