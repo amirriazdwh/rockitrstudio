@@ -41,6 +41,13 @@ docker inspect -f '{{.Created}}' rstudio-multiuser:4.5.1          # image build 
 docker inspect -f '{{.State.StartedAt}}' rstudio-big              # container start time
 
 # in the container
-stat -c '%y  %n' /etc/cont-init.d/02_userconf                     # file mtime (build time)
+stat -c '%y  %n' /etc/cont-init.d/02_userconf     
+
+
+
+# /etc/R/Rprofile.site
+options(bitmapType = "cairo")
+options(tikzLatex = "/usr/bin/pdflatex")
+                # file mtime (build time)
 
 

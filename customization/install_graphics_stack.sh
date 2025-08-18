@@ -7,8 +7,9 @@ umask 022
 trap 'echo "❌ Error on line $LINENO"; exit 1' ERR
 
 : "${CRAN:=https://cloud.r-project.org}"     # override with ENV if you like
-: "${INSTALL_TEX:=no}"                        # yes/no – TinyTeX
+: "${INSTALL_TEX:=no}"                        # no | apt | tinytex | yes/true/1 (tinytex)
 : "${SET_HEADLESS_DEFAULT:=keep}"             # yes|no|keep – write options(bitmapType='cairo')
+: "${VERIFY_GRAPHICS:=no}"                    # yes|no – end-to-end check
 
 if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
   echo "Please run as root (sudo)."; exit 1
@@ -18,14 +19,16 @@ export DEBIAN_FRONTEND=noninteractive
 
 echo "→ Installing OS libraries (Ubuntu Noble)…"
 apt-get update -y
-apt-get install -y --no-install-recommends build-essential pkg-config ca-certificates curl gnupg libcairo2-dev libfreetype6-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libpng-dev libjpeg-dev libtiff-dev libpango1.0-dev libxt-dev zlib1g-dev libxml2-dev libcurl4-openssl-dev libicu-dev libopenblas-dev fonts-dejavu-core ghostscript
+apt-get install -y --no-install-recommends \
+  build-essential pkg-config ca-certificates curl gnupg \
+  libcairo2-dev libfreetype6-dev libfontconfig1-dev \
+  libharfbuzz-dev libfribidi-dev libpng-dev libjpeg-dev libtiff-dev \
+  libpango1.0-dev libxt-dev \
+  zlib1g-dev libxml2-dev libcurl4-openssl-dev libicu-dev libopenblas-dev \
+  fonts-dejavu-core ghostscript
 
-# --- ADD: TeX Live for tikzDevice (runs only if INSTALL_TEX=apt) ---
+# TeX Live via apt for tikzDevice (only if requested)
 if [[ "${INSTALL_TEX,,}" == "apt" ]]; then
-  echo "→ Installing TeX Live (apt) for tikzDevice…"
-  apt-get install -y --no-install-recommends \
-    texlive-latex-base texlive-latex-recommended texlive-latex-extra \
- if [[ "${INSTALL_TEX,,}" == "apt" ]]; then
   echo "→ Installing TeX Live (apt) for tikzDevice…"
   apt-get install -y --no-install-recommends \
     texlive-latex-base texlive-latex-recommended texlive-latex-extra \
@@ -48,7 +51,7 @@ retry <- function(fun, tries=3, sleep=3) {
 
 repos <- Sys.getenv("CRAN"); if (!nzchar(repos)) repos <- "https://cloud.r-project.org"
 
-# Optionally ensure headless-safe default for base png/jpeg/tiff
+# Headless-safe default for base png/jpeg/tiff
 mode <- tolower(Sys.getenv("SET_HEADLESS_DEFAULT"))
 if (mode %in% c("yes","keep")) {
   if (!file.exists("/etc/R/Rprofile.site")) {
@@ -63,7 +66,6 @@ if (mode %in% c("yes","keep")) {
   }
 }
 
-# Install in dependency-aware order
 pkgs <- c("systemfonts","textshaping","ragg","svglite","ggplot2","gridExtra","gridBase","tikzDevice")
 todo <- setdiff(pkgs, rownames(installed.packages()))
 if (length(todo)) {
@@ -77,30 +79,35 @@ if (length(todo)) {
 }
 
 # Optional TinyTeX so tikzDevice .tex can compile to PDF
-if (tolower(Sys.getenv("INSTALL_TEX")) %in% c("yes","true","1")) {
+texmode <- tolower(Sys.getenv("INSTALL_TEX"))
+if (texmode %in% c("tinytex","yes","true","1")) {
   if (!requireNamespace("tinytex", quietly=TRUE)) install.packages("tinytex", repos=repos, quiet=TRUE)
   try({ if (!tinytex::is_tinytex()) tinytex::install_tinytex() }, silent=TRUE)
 }
-
-# Probe (non-fatal warnings)
-need <- c("systemfonts","textshaping","ragg","svglite","ggplot2","gridExtra","gridBase","tikzDevice")
-ok <- vapply(need, function(p) requireNamespace(p, quietly=TRUE), logical(1))
-if (!all(ok)) warning("Missing after install: ", paste(names(ok)[!ok], collapse=", "))
 RS
 
+# Optional end-to-end verification
 if [[ "${VERIFY_GRAPHICS,,}" == "yes" ]]; then
-echo "→ Verifying graphics stack end-to-end…"
-Rscript --vanilla -e "suppressPackageStartupMessages({library(ragg); library(svglite); library(tikzDevice)})
-  ragg::agg_png('/tmp/ragg_ok.png',800,600); plot(1:10); dev.off();
-  svglite::svglite('/tmp/svglite_ok.svg',6,4); plot(1:10); dev.off();
-  tikzDevice::tikz('/tmp/tikz_ok.tex', standAlone=TRUE); plot(1:10); dev.off();
-  stopifnot(file.exists('/tmp/ragg_ok.png'), file.exists('/tmp/svglite_ok.svg'), file.exists('/tmp/tikz_ok.tex'))"
+  echo "→ Verifying graphics stack end-to-end…"
+  Rscript --vanilla - <<'RS'
+suppressPackageStartupMessages({
+  if (!requireNamespace("ragg", quietly=TRUE)) stop("ragg missing")
+  if (!requireNamespace("svglite", quietly=TRUE)) stop("svglite missing")
+  if (!requireNamespace("tikzDevice", quietly=TRUE)) stop("tikzDevice missing")
+})
+ragg::agg_png("/tmp/ragg_ok.png", 800, 600); plot(1:10); dev.off()
+svglite::svglite("/tmp/svglite_ok.svg", 6, 4); plot(1:10); dev.off()
+tikzDevice::tikz("/tmp/tikz_ok.tex", standAlone = TRUE); plot(1:10); dev.off()
+stopifnot(file.exists("/tmp/ragg_ok.png"), file.exists("/tmp/svglite_ok.svg"), file.exists("/tmp/tikz_ok.tex"))
+RS
 
-# Quiet, fail-fast LaTeX compile (skip if you don’t need PDF in CI)
-pdflatex -interaction=nonstopmode -halt-on-error /tmp/tikz_ok.tex >/tmp/tikz_ok_build.log 2>&1 || {
-  echo 'pdflatex failed; showing log tail:'; tail -n 80 /tmp/tikz_ok_build.log; exit 1; }
-test -f /tmp/tikz_ok.pdf
-
+  if command -v pdflatex >/dev/null 2>&1; then
+    pdflatex -interaction=nonstopmode -halt-on-error /tmp/tikz_ok.tex > /tmp/tikz_ok_build.log 2>&1 || {
+      echo 'pdflatex failed; showing log tail:'; tail -n 80 /tmp/tikz_ok_build.log; exit 1; }
+    test -f /tmp/tikz_ok.pdf
+  else
+    echo "pdflatex not found; skipping PDF compile."
+  fi
 fi
 
 echo "✅ Graphics stack install complete."
