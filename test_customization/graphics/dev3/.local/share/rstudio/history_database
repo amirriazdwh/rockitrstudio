@@ -1,0 +1,65 @@
+1755537011954:# Write the .tex
+1755537011954:tikzDevice::tikz("tikz_ok.tex", standAlone = TRUE, width = 5, height = 4)
+1755537012054:plot(1:10, main = "tikzDevice")
+1755537014449:dev.off()
+1755537014450:file.exists("tikz_ok.tex")
+1755537014450:# Compile to PDF if pdflatex is available
+1755537014450:if (nzchar(Sys.which("pdflatex"))) {
+1755537014450:system("pdflatex -interaction=nonstopmode -halt-on-error -output-directory . tikz_ok.tex")
+1755537014450:file.exists("tikz_ok.pdf")
+1755537014450:}
+1755537435568:ragg::agg_png("gridextra.png", width = 1200, height = 800, res = 144)
+1755537435750:g <- ggplot2::ggplot(iris, ggplot2::aes(Sepal.Length, Sepal.Width, color = Species)) +
+1755537435750:ggplot2::geom_point()
+1755537436103:gridExtra::grid.arrange(ggplot2::ggplotGrob(g))
+1755537436321:dev.off()
+1755537436346:file.exists("gridextra.png")
+1755537546085:ragg::agg_png("ggplot_ragg.png", width = 1200, height = 800, res = 144)
+1755537546087:print( ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) + ggplot2::geom_point() +
+1755537546087:ggplot2::labs(title = "ggplot2 on ragg") )
+1755537546160:dev.off()
+1755537546183:file.exists("ggplot_ragg.png")
+1755537638294:svglite::svglite("test_svglite.svg", width = 6, height = 4)
+1755537638324:plot(1:10, main = "svglite SVG")
+1755537638327:dev.off()
+1755537638328:file.exists("test_svglite.svg")
+1755537868582:ragg::agg_png("test_ragg.png", width = 1000, height = 700, res = 144)
+1755537868583:plot(1:10, main = "ragg PNG")
+1755537868592:dev.off()
+1755537868609:file.exists("test_ragg.png")
+1755537942356:plot(1:10, main = "RStudio device: base plot")
+1755538046246:capabilities(c("cairo","png","jpeg","tiff","X11"))
+1755538046247:getOption("bitmapType")  # should be "cairo"
+1755538046247:ok <- sapply(c("ragg","svglite","ggplot2","gridExtra","gridBase","tikzDevice"),
+1755538046247:requireNamespace, quietly = TRUE)
+1755538184157:# Install ggplot2 if needed
+1755538184157:if (!requireNamespace("ggplot2", quietly = TRUE)) {
+1755538184157:install.packages("ggplot2")
+1755538184157:}
+1755538184158:# Load ggplot2
+1755538184158:library(ggplot2)
+1755538184170:# Create sample data (using a safer name)
+1755538184170:plot_data <- data.frame(
+1755538184170:x = 1:10,
+1755538184170:y = c(2, 5, 3, 8, 7, 9, 6, 10, 12, 15)
+1755538184170:)
+1755538184172:# Generate the plot (now error-free)
+1755538184172:ggplot(plot_data, aes(x = x, y = y)) +  # Use 'plot_data' instead of 'data'
+1755538184172:geom_point(size = 3, color = "blue") +
+1755538184172:geom_line(color = "red", linetype = "dashed") +
+1755538184172:geom_smooth(method = "lm", se = FALSE) +
+1755538184172:labs(
+1755538184172:title = "Sample ggplot2 Graph",
+1755538184172:x = "X-axis Label",
+1755538184172:y = "Y-axis Label"
+1755538184172:) +
+1755538184172:theme_minimal()
+1755538866455:ragg::agg_png("plot@144dpi.png", width = 1200, height = 800, res = 144)
+1755538866457:plot(1:10, main = "ragg @ 144 DPI")
+1755538866461:dev.off()
+1755539000331:# in a setup chunk
+1755539000332:knitr::opts_chunk$set(dev = "ragg_png", fig.width = 6, fig.height = 4, dpi = 144)
+1755539032526:install.packages("knitr")
+1755539042167:# in a setup chunk
+1755539042168:knitr::opts_chunk$set(dev = "ragg_png", fig.width = 6, fig.height = 4, dpi = 144)
+1755539042215:# now your plots render at 144 DPI in the output document

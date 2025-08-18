@@ -1,0 +1,4 @@
+svglite::svglite("test_svglite.svg", width = 6, height = 4)
+plot(1:10, main = "svglite SVG")
+dev.off()
+file.exists("test_svglite.svg")

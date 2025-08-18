@@ -12,6 +12,8 @@ docker run -d \
   rstudio-multiuser:4.5.1
 
 docker build -t rstudio-multiuser:4.5.1 -f customization/rstudio_multiuser_4.5.1.Dockerfile .
+docker cp rstudio-big:/home/dev3  /home/amirriaz/rockit/rocker-versioned2/test_customization/graphics
+
 
 docker stop $(docker ps -q) && \
 docker rm -f $(docker ps -aq) && \
@@ -48,6 +50,28 @@ stat -c '%y  %n' /etc/cont-init.d/02_userconf
 # /etc/R/Rprofile.site
 options(bitmapType = "cairo")
 options(tikzLatex = "/usr/bin/pdflatex")
-                # file mtime (build time)
+options(repr.plot.res = 144)   
+
+# Totally. options(repr.plot.res = 144) bumps the DPI of inline plots in Jupyter (IRkernel) so they look crisp (“retina”). It doesn’t affect RStudio’s plot pane—see alternatives for RStudio at the end.
+# Jupyter / IRkernel examples
+# One-off in a notebook cell
+
+# Make inline plots 6x4 inches at 144 DPI
+options(repr.plot.res = 144, repr.plot.width = 6, repr.plot.height = 4)
+plot(1:10, main = "High-DPI base plot (IRkernel)")
+            # file mtime (build time)
+options(repr.plot.res = 144, repr.plot.width = 6, repr.plot.height = 4)
+
+
+library(ggplot2)
+ggplot(mtcars, aes(mpg, wt)) +
+  geom_point() +
+  labs(title = "High-DPI ggplot (IRkernel)")
+
+if (nzchar(Sys.getenv("JPY_PARENT_PID"))) {
+  options(repr.plot.res = 144, repr.plot.width = 6, repr.plot.height = 4)
+}
+
+
 
 
