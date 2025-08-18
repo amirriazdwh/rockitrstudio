@@ -59,5 +59,12 @@ COPY customization/install_Rstudio_theme.sh /rocker_scripts/install_Rstudio_them
 RUN chmod +x /rocker_scripts/install_Rstudio_theme.sh
 RUN /rocker_scripts/install_Rstudio_theme.sh
 
+ENV INSTALL_TEX=apt
+ENV VERIFY_GRAPHICS=yes
+
+COPY customization/install_graphics_stack.sh /rocker_scripts/install_graphics_stack.sh
+RUN chmod +x /rocker_scripts/install_graphics_stack.sh
+RUN /rocker_scripts/install_graphics_stack.sh
+
 EXPOSE 8787
 CMD ["/init"]
