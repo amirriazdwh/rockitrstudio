@@ -70,5 +70,9 @@ COPY customization/install_dbconnector.sh /rocker_scripts/install_dbconnector.sh
 RUN chmod +x /rocker_scripts/install_dbconnector.sh
 RUN /rocker_scripts/install_dbconnector.sh
 
+COPY customization/install_fs_read_write.sh /rocker_scripts/install_fs_read_write.sh
+RUN chmod +x /rocker_scripts/install_fs_read_write.sh
+RUN /rocker_scripts/install_fs_read_write.sh
+
 EXPOSE 8787
 CMD ["/init"]
