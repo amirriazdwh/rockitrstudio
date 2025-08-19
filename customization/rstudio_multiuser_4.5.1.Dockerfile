@@ -74,5 +74,9 @@ COPY customization/install_fs_read_write.sh /rocker_scripts/install_fs_read_writ
 RUN chmod +x /rocker_scripts/install_fs_read_write.sh
 RUN /rocker_scripts/install_fs_read_write.sh
 
+COPY customization/install_fin_stats_modeling.sh /rocker_scripts/install_fin_stats_modeling.sh
+RUN chmod +x /rocker_scripts/install_fin_stats_modeling.sh
+RUN /rocker_scripts/install_fin_stats_modeling.sh
+
 EXPOSE 8787
 CMD ["/init"]
