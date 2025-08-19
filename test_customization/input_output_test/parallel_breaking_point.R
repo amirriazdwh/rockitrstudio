@@ -20,7 +20,7 @@ MULTIPLIER <- 1.8        # Increase by 80% each test
 NUM_COLS <- 20
 
 # File paths
-TEST_DIR <- "/home/cdsw"
+TEST_DIR <- "/home/dev1"
 DATA_DIR <- file.path(TEST_DIR, "test_data")
 if (!dir.exists(DATA_DIR)) dir.create(DATA_DIR, recursive = TRUE)
 
