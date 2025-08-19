@@ -6,6 +6,7 @@
 # Strategy: Generate + read increasingly larger datasets until failure
 # For RStudio viewing and analysis
 # use command : Rscript patched_breaking_point_test.R to run
+# Breaking point test for R_MAX_VSIZE (Test ok)
 # ================================================================
 
 suppressPackageStartupMessages({
@@ -13,17 +14,20 @@ suppressPackageStartupMessages({
   library(parallel)
 })
 
+######################
 # Configuration
+#####################
 NUM_CORES <- detectCores()
 START_ROWS <- 1000000    # 1M rows
-MAX_ROWS <- 100000000    # 100M rows max
+MAX_ROWS <- 1000000000    # 100M rows max
 MULTIPLIER <- 1.8        # Increase by 80% each test
-NUM_COLS <- 20
+NUM_COLS <- 40
 
 # File paths
-TEST_DIR <- "/home/cdsw"
+TEST_DIR <- "/home/dev1"
 DATA_DIR <- file.path(TEST_DIR, "test_data")
 if (!dir.exists(DATA_DIR)) dir.create(DATA_DIR, recursive = TRUE)
+################################################################
 
 # Results storage for RStudio
 breaking_point_results <- list()
