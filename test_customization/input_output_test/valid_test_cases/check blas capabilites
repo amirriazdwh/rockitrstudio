@@ -1,0 +1,32 @@
+# 1) Confirm R home and key subdirs
+R.home()
+R.home("lib")
+R.home("bin")
+
+# 2) Look for libRblas.so in your build
+rb <- file.path(R.home("lib"), "libRblas.so")
+rb
+file.exists(rb)
+if (file.exists(rb)) {
+  system(paste("ls -l", shQuote(rb)))
+  system(paste("ldd",   shQuote(rb)))   # shows what BLAS it links to
+} else {
+  message("No libRblas.so at R.home('lib') — will check the R executable instead")
+}
+
+# 3) Inspect the R executable's dynamic links (often shows BLAS, LAPACK)
+rexec <- file.path(R.home("bin"), "exec", "R")
+file.exists(rexec)
+system(paste("ls -l", shQuote(rexec)))
+system(paste("ldd",   shQuote(rexec)))
+
+# 4) Cross-check from inside R (what you already saw)
+sessionInfo()$BLAS
+extSoftVersion()
+La_library()   # which LAPACK lib R reports
+
+# 5) (Optional) Resolve the absolute BLAS .so path R printed
+blas_path <- sessionInfo()$BLAS
+if (length(blas_path) && nzchar(blas_path)) {
+  system(paste("readlink -f", shQuote(blas_path)))
+}
