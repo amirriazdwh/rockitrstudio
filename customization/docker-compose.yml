@@ -1,0 +1,43 @@
+services:
+  rstudio-big:
+    image: rstudio-multiuser:4.5.1
+    container_name: rstudio-big
+    ports:
+      - "8787:8787"
+
+    # Resource controls (compose spec; work with `docker compose up`)
+    cpus: 8
+    cpuset: "0-7"
+    mem_limit: "32g"
+    mem_reservation: "28g"
+    pids_limit: 131072
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+      nproc:
+        soft: 32768
+        hard: 32768
+    shm_size: "8g"
+
+    sysctls:
+      net.core.somaxconn: "65535"
+      net.ipv4.tcp_max_syn_backlog: "8192"
+
+    environment:
+      PASSWORD: "strongpass"
+      DISABLE_AUTH: "false"
+      MALLOC_ARENA_MAX: "2"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      R_MAX_VSIZE: "10Gb"
+
+    volumes:
+      - /srv/dev1:/home/dev1
+      - /srv/dev2:/home/dev2
+      # If you run on SELinux (RHEL/Fedora/CentOS), add :Z to each bind:
+      # - /srv/dev1:/home/dev1:Z
+      # - /srv/dev2:/home/dev2:Z
+
+    restart: unless-stopped

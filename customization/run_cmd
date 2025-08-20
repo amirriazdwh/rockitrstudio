@@ -34,7 +34,9 @@ docker run -d --name rstudio-big \
   -e DISABLE_AUTH=false \
   -e MALLOC_ARENA_MAX=2 \
   -e OMP_NUM_THREADS=1 -e OPENBLAS_NUM_THREADS=1 -e MKL_NUM_THREADS=1 \
-  -e R_MAX_VSIZE=20Gb \
+  -e R_MAX_VSIZE=10Gb \
+  -v /srv/dev1:/home/dev1 \
+  -v /srv/dev2:/home/dev2 \
    rstudio-multiuser:4.5.1
 
 
